@@ -3,21 +3,69 @@ const textarea = document.getElementById("textarea");
 
 textarea.focus();
 
-textarea.addEventListener("keyup", (e) => createTags(e.target.value));
+textarea.addEventListener("keyup", (e) => {
+  createTags(e.target.value);
 
+  if (e.key === "Enter") {
+    setTimeout(() => {
+      e.target.value = "";
+    }, 10);
+
+    randomSelect();
+  }
+});
 function createTags(input) {
   console.log(input);
   const tags = input
+    //split each input by comma
     .split(",")
+    //dont allow it to be an empty string
     .filter((tag) => tag.trim() !== "")
+    //trim white spaces
     .map((tag) => tag.trim());
 
   tagsEl.innerHTML = "";
 
   tags.forEach((tag) => {
+    //creates new span for every option entered
     const tagEl = document.createElement("span");
     tagEl.classList.add("tag");
+    //inner text of each span el is set to tag value, each value entered by user
     tagEl.innerText = tag;
     tagsEl.appendChild(tagEl);
   });
+}
+
+function randomSelect() {
+  const times = 30;
+  const interval = setInterval(() => {
+    const randomTag = pickRandomTag();
+    highlightTag(randomTag);
+    setTimeout(() => {
+      //unhighlights tag every 100 ms
+      unHighlightTag(randomTag);
+    }, 100);
+  }, 100);
+
+  setTimeout(() => {
+    clearInterval(interval);
+    setTimeout(() => {
+      const randomTag = pickRandomTag();
+      highlightTag(randomTag);
+    });
+  }, times * 100);
+}
+
+function pickRandomTag() {
+  const tags = document.querySelectorAll(".tag");
+  //gives you random tag
+  return tags[Math.floor(Math.random() * tags.length)];
+}
+
+function highlightTag(tag) {
+  tag.classList.add("highlight");
+}
+
+function unHighlightTag(tag) {
+  tag.classList.remove("highlight");
 }
